@@ -87,7 +87,20 @@ def live_matches():
     page = BeautifulSoup(requests.get("https://www.cricbuzz.com/cricket-match/live-scores").text, "lxml")
     page = page.find("div", class_="cb-col cb-col-100 cb-bg-white")
     matches = page.find_all("div", class_="cb-scr-wll-chvrn cb-lv-scrs-col")
-    return jsonify([match.text.strip() for match in matches])
+
+    live_data = []
+    for match in matches:
+        title = match.find("h3")
+        score = match.find("div", class_="cb-lv-scrs-col text-black")
+        details = match.find("div", class_="cb-text-invite")
+
+        live_data.append({
+            "title": title.text.strip() if title else "N/A",
+            "livescore": score.text.strip() if score else "N/A",
+            "details": details.text.strip() if details else "N/A"
+        })
+
+    return jsonify(live_data)
 
 @app.route('/')
 def home():
